@@ -5,7 +5,7 @@ import WebSocket from 'ws';
 const PREFIX = process.env.PREFIX || "simple"
 const VERSION_NUMBER = 11;
 
-console.log(`PlaceNL headless client V${VERSION_NUMBER}`);
+console.log(`r3ps4J headless client V${VERSION_NUMBER}`);
 
 const args = process.argv.slice(2);
 
@@ -195,16 +195,16 @@ async function refreshTokens() {
 }
 
 function connectSocket() {
-    console.log('Verbinden met PlaceNL server...')
+    console.log('Verbinden met r3ps4J server...')
 
-    socket = new WebSocket('wss://placenl.noahvdaa.me/api/ws');
+    socket = new WebSocket('ws://r3ps4j.nl:3987/api/ws');
 
     socket.onerror = function (e) {
         console.error("Socket error: " + e.message)
     }
 
     socket.onopen = function () {
-        console.log('Verbonden met PlaceNL server!')
+        console.log('Verbonden met r3ps4J server!')
         socket.send(JSON.stringify({ type: 'getmap' }));
         socket.send(JSON.stringify({ type: 'brand', brand: `nodeheadless-${PREFIX}-V${VERSION_NUMBER}` }));
     };
@@ -220,7 +220,7 @@ function connectSocket() {
         switch (data.type.toLowerCase()) {
             case 'map':
                 console.log(`Nieuwe map geladen (reden: ${data.reason ? data.reason : 'verbonden met server'})`)
-                currentOrders = await getMapFromUrl(`https://placenl.noahvdaa.me/maps/${data.data}`);
+                currentOrders = await getMapFromUrl(`http://r3ps4j.nl:3987/maps/${data.data}`);
                 currentOrderList = getRealWork(currentOrders.data);
                 break;
             default:
@@ -229,7 +229,7 @@ function connectSocket() {
     };
 
     socket.onclose = function (e) {
-        console.warn(`PlaceNL server heeft de verbinding verbroken: ${e.reason}`)
+        console.warn(`r3ps4J server heeft de verbinding verbroken: ${e.reason}`)
         console.error('Socketfout: ', e.reason);
         socket.close();
         setTimeout(connectSocket, 1000);
